@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardMapper">
+	
+	<resultMap id="boardResultMap" type="Board">
+  		<result property="board_num" column="board_num"/>
+  		<result property="board_writer" column="board_writer"/>
+  		<result property="board_title" column="board_title"/>
+  		<result property="board_content" column="board_content"/>
+  		<result property="board_original_filename" column="board_original_filename"/>
+  		<result property="board_rename_filename" column="board_rename_filename"/>
+  		<result property="board_level" column="board_level"/>
+  		<result property="board_reply" column="board_reply"/>
+  		<result property="board_reply_ref" column="board_reply_ref"/>
+  		<result property="board_reply_seq" column="board_reply_seq"/>
+  		<result property="board_readcount" column="board_readcount"/>
+  		<result property="board_date" column="board_date"/>
+	</resultMap>
+	
+	<select id="selectAll" resultMap="boardResultMap">
+		<![CDATA[
+			SELECT *
+			FROM BOARD	
+			ORDER BY BOARD_NUM DESC			
+		]]>
+	</select>
+	<!-- <insert id="insertBoard" parameterType="Board" useGeneratedKeys="true">
+		<![CDATA[
+		insert into member values (#{board_title}, #{board_writer}, 
+		#{board_content}, #{gender}, #{age}, #{email}, #{phone}, 
+		#{address}, #{hobby}, default)
+		]]>
+		<![CDATA[
+			INSERT INTO BOARD 
+			VALUES (SEQ_BNUM.NEXTVAL, #{board_title}, #{board_writer}, #{board_content}, #{board_original_filename}, 
+			#{board_rename_filename}, SYSDATE, 0, 0, 0, 0, 0)		
+		]]>
+	</insert> -->
+	
+	<insert id="insertBoard" parameterType="Board">
+      <![CDATA[
+         INSERT INTO BOARD VALUES ((select max(board_num)+1 from board),
+          #{board_title}, #{board_writer}, 
+          #{board_content}, #{board_original_filename},
+          #{board_rename_filename}, sysdate, 0, 
+          (select max(board_num) + 1 from board), null, default, default)      
+      ]]>
+   </insert>
+   
+   
+
+
+
+	<select id="boardDetail" parameterType="Board" resultType = "Board">
+	
+		<![CDATA[
+         select * from board where board_num = #{board_num}  
+      ]]>
+	</select>
+	
+	<delete id="bdelete" parameterType="Board">
+      <![CDATA[
+         delete from board where board_num = #{board_num}
+      ]]>
+   </delete>
+	
+	</mapper>
